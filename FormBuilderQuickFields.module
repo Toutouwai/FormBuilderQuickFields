@@ -1,0 +1,240 @@
+<?php namespace ProcessWire;
+
+/**
+ *
+ * Form Builder Quick Fields
+ *
+ * @author Robin Sallis
+ *
+ * ProcessWire 3.x
+ * Copyright (C) 2011 by Ryan Cramer
+ * Licensed under GNU/GPL v2, see LICENSE.TXT
+ *
+ * http://www.processwire.com
+ * http://www.ryancramer.com
+ *
+ */
+
+class FormBuilderQuickFields extends WireData implements Module {
+
+	/**
+	 * Module information
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Form Builder Quick Fields',
+			'version' => '0.1.0',
+			'summary' => 'Quickly set width, show-if, required and required-if status of Form Builder fields.',
+			'author' => 'Robin Sallis',
+			'href' => 'https://github.com/Toutouwai/FormBuilderQuickFields',
+			'icon' => 'asterisk',
+			'autoload' => 'process=ProcessFormBuilder',
+			'requires' => 'ProcessWire>=3.0.102, FormBuilder>=0.3.9, PHP>=5.4.0'
+		);
+	}
+
+	protected $inputs_selector_options = [];
+
+	protected $label_selector_options = [];
+
+	/**
+	 * Ready
+	 */
+	public function __construct() {
+		parent::__construct();
+		$this->inputs_selector_options = [
+			'width' => $this->_('Width'),
+			'showif' => $this->_('Show if'),
+			'required' => $this->_('Required'),
+			'requiredif' => $this->_('Required if'),
+		];
+		$this->label_selector_options = [
+			'label' => $this->_('Show label'),
+			'name' => $this->_('Show name'),
+			'both' => $this->_('Show both'),
+		];
+		$this->fbqf_collapsed = 1;
+		// Set JS config
+		$this->wire('config')->js($this->className, [
+			'reload_confirm' => $this->_('You have edited a Form Builder field since this page was loaded so the Quick Field Settings values may be out of sync. Reload the page?')
+		]);
+	}
+
+	/**
+	 * Ready
+	 */
+	public function ready() {
+		$this->addHookAfter('ProcessFormBuilder::buildEditForm', $this, 'afterBuildEditFormFields');
+		$this->addHookAfter('ProcessFormBuilder::executeSaveFormSettings', $this, 'afterSaveFormSettings');
+	}
+
+	/**
+	 * After ProcessFormBuilder::buildEditFormFields
+	 * Add field to ProcessFormBuilder
+	 *
+	 * @param HookEvent $event
+	 */
+	protected function afterBuildEditFormFields(HookEvent $event) {
+		/* @var InputfieldForm $form */
+		$form = $event->return;
+		$form_id = $event->arguments(0);
+		if(!$form_id) return;
+		$pfb = $event->object;
+		$fb_form = $pfb->forms->load($form_id);
+		$modules = $this->wire('modules');
+		$modules->get('JqueryUI')->use('vex');
+		// Get field to insert before
+		$insert_before = $form->getChildByName('submit_save_form');
+		$markup = '';
+
+		// Hidden input to record inputfield open/close state
+		$markup .= "<input type='hidden' id='fbqf_open' name='fbqf_open' value='$fb_form->fbqf_open'>";
+
+		// Display label selector
+		$markup .= '<div class="fbqf-label-selector">';
+		$current_label = $fb_form->fbqf_label_type ?: 'label';
+		foreach($this->label_selector_options as $option => $label) {
+			$setting = "fbqf_display_{$option}";
+			$checked = '';
+			if($option === $current_label) $checked = ' checked';
+			$markup .= <<<EOT
+<div class="fbqf-label-selector-item">
+	<label class="fbqf-input-label" for="$setting"><input{$checked} id="$setting" name="fbqf_label_type" type="radio" class="uk-radio" value="$option">$label</label>
+</div>
+EOT;
+		}
+		$markup .= '</div>';
+
+		// Display inputs selector
+		$markup .= '<div class="fbqf-inputs-selector">';
+		$display_inputs_classes = [];
+		foreach($this->inputs_selector_options as $option => $label) {
+			$setting = "fbqf_display_{$option}";
+			$checked = '';
+			if($fb_form->$setting) {
+				$checked = ' checked';
+				$display_inputs_classes[] = "display-{$option}";
+			}
+			$markup .= <<<EOT
+<div class="fbqf-inputs-selector-item">
+	<label class="fbqf-input-label" for="$setting"><input{$checked} id="$setting" name="$setting" type="checkbox" class="uk-checkbox">$label</label>
+</div>
+EOT;
+		}
+		$markup .= '</div>';
+
+		// Open container
+		$markup .= '<div class="fbqf-container">';
+
+		$markup .= $this->fieldsMarkup($fb_form->children);
+
+		// Close container
+		$markup .= '</div>';
+
+		/* @var InputfieldMarkup $f */
+		$f = $modules->InputfieldMarkup;
+		$f->name = 'quick_field_settings';
+		$f->label = $this->_('Quick Field Settings');
+		$f->icon = 'asterisk';
+		$f->value = $markup;
+		$f->addClass("display-{$current_label}", 'wrapClass');
+		$f->addClass(implode(' ', $display_inputs_classes), 'wrapClass');
+		if(count($display_inputs_classes) === 1) $f->addClass('single-input', 'wrapClass');
+		if(!$fb_form->fbqf_open) $f->collapsed = Inputfield::collapsedYes;
+		$form->insertBefore($f, $insert_before);
+
+		// Load stylesheet and script
+		$config = $this->wire('config');
+		$info = $this->getModuleInfo();
+		$version = $info['version'];
+		$config->styles->add($config->urls->$this . "{$this}.css?v=$version");
+		$config->scripts->add($config->urls->$this . "{$this}.js?v=$version");
+	}
+
+	protected function fieldsMarkup($fb_fields) {
+		$markup = '';
+		foreach($fb_fields as $fb_field) {
+			/* @var FormBuilderField $fb_field */
+			$is_fieldset = $fb_field->type === 'Fieldset';
+			$col_width = $fb_field->columnWidth ?: 100;
+			$name = $fb_field->name;
+			$label = $fb_field->label ?: $fb_field->name;
+			$inner_markup = <<<EOT
+<div class="fbqf-input-item fbqf-number-item fbqf-width">
+	<label class="fbqf-input-label" for="fbqf_width_{$name}">Width</label>
+	<input id="fbqf_width_{$name}" name="fbqf_width_{$name}" type="number" min="10" max="100" value="$col_width">
+</div>
+<div class="fbqf-input-item fbqf-text-item fbqf-showif">
+	<label class="fbqf-input-label" for="fbqf_showif_{$name}">Show if</label>
+	<input id="fbqf_showif_{$name}" name="fbqf_showif_{$name}" type="text" value="$fb_field->showIf">
+</div>
+EOT;
+			if(!$is_fieldset) {
+				$required_checked = $fb_field->required ? ' checked' : '';
+				$inner_markup .= <<<EOT
+<div class="fbqf-input-item fbqf-checkbox-item fbqf-required">
+	<label class="fbqf-input-label" for="fbqf_required_{$name}"><input id="fbqf_required_{$name}" name="fbqf_required_{$name}" type="checkbox" class="uk-checkbox"$required_checked>Required</label>
+</div>
+<div class="fbqf-input-item fbqf-text-item fbqf-requiredif">
+	<label class="fbqf-input-label" for="fbqf_requiredif_{$name}">Required if</label>
+	<input id="fbqf_requiredif_{$name}" name="fbqf_requiredif_{$name}" type="text" value="$fb_field->requiredIf">
+</div>
+EOT;
+			}
+			$inner_markup = '<div class="fbqf-input-items">' . $inner_markup . '</div>';
+			if($is_fieldset) $inner_markup .= '<div class="fbqf-fieldset">' . $this->fieldsMarkup($fb_field->children) . '</div>';
+			$class = $is_fieldset ? ' fbqf-fieldset-item' : '';
+			$markup .= <<<EOT
+<div class="fbqf-item{$class}" style="width:{$col_width}%">
+	<div class="fbqf-label">
+		<span class="f-label">$label</span>
+		<span class="f-name">$name</span>
+	</div>
+	$inner_markup
+</div>
+EOT;
+		}
+		return $markup;
+	}
+
+	/**
+	 * After ProcessFormBuilder::executeSaveFormSettings
+	 * Apply field settings
+	 *
+	 * @param HookEvent $event
+	 */
+	protected function afterSaveFormSettings(HookEvent $event) {
+		/* @var FormBuilderForm $fb_form */
+		$fb_form = $event->arguments(0);
+		$post = $this->wire('input')->post;
+		// Inputfield open/close state
+		$fb_form->fbqf_open = $post->int('fbqf_open');
+		// Display inputs
+		foreach($this->inputs_selector_options as $option => $label) {
+			$setting_name = "fbqf_display_{$option}";
+			if($post->$setting_name) {
+				$fb_form->$setting_name = 1;
+			} else {
+				$fb_form->$setting_name = '';
+			}
+		}
+		// Display label
+		$fb_form->fbqf_label_type = $post->option('fbqf_label_type', array_keys($this->label_selector_options));
+		// Don't save FB field settings if module field was closed
+		if(!$post->fbqf_open) return;
+		$fb_fields_flat = $fb_form->getChildrenFlat();
+		foreach($fb_fields_flat as $field_name => $fb_field) {
+			/* @var FormBuilderField $fb_field */
+			// Skip fieldset close
+			if(substr($field_name, -4) === '_END') continue;
+			$fb_field->columnWidth = $post->int("fbqf_width_{$field_name}") ?: 100;
+			$fb_field->showIf = $post->text("fbqf_showif_{$field_name}");
+			// Fieldset cannot be required/required-if
+			if($fb_field->type === 'Fieldset') continue;
+			$fb_field->required = $post->bool("fbqf_required_{$field_name}");
+			$fb_field->requiredIf = $post->text("fbqf_requiredif_{$field_name}");
+		}
+
+	}
+
+}

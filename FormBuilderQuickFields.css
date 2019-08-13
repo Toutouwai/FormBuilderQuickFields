@@ -1,0 +1,123 @@
+.Inputfields #Inputfield_quick_field_settings .fbqf-input-label {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  color: #8d939e; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-label-selector {
+  float: left;
+  padding-bottom: 5px; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-label-selector .fbqf-label-selector-item {
+    display: inline-block;
+    padding-right: 20px; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-label-selector .fbqf-label-selector-item:last-child {
+      padding-right: 0; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-label-selector .fbqf-label-selector-item input {
+      margin-right: 6px;
+      margin-bottom: -2px; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-label-selector .fbqf-input-label {
+    color: #354b60; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-inputs-selector {
+  float: left;
+  clear: left;
+  padding-bottom: 15px; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-inputs-selector .fbqf-inputs-selector-item {
+    display: inline-block;
+    padding-right: 20px; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-inputs-selector .fbqf-inputs-selector-item:last-child {
+      padding-right: 0; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-inputs-selector .fbqf-inputs-selector-item input {
+      margin-right: 6px;
+      margin-bottom: -2px; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-inputs-selector .fbqf-input-label {
+    color: #354b60; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-submit {
+  text-align: right;
+  padding: 15px 0; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-submit.fbqf-submit-top {
+    padding-top: 5px; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-submit button {
+    margin-right: 0; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-container {
+  overflow: hidden;
+  margin-right: -4px;
+  margin-bottom: -4px;
+  clear: both; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-item {
+  float: left;
+  flex-wrap: wrap;
+  background-color: rgba(172, 195, 225, 0.2);
+  padding: 3px 8px 8px 8px;
+  max-width: 100%;
+  border-right: 4px solid #fff;
+  border-bottom: 4px solid #fff;
+  transition: width 0.3s; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  overflow: hidden;
+  box-shadow: inset -4px -4px 0 0 #fff;
+  border-top: 4px solid #fff;
+  border-left: 4px solid #fff; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-label {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #354b60; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-label .f-label {
+    font-weight: bold;
+    margin-right: 10px;
+    display: none; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-label .f-name {
+    display: none; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-fieldset-item > .fbqf-label .f-label {
+  text-transform: uppercase; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-input-items {
+  margin: -4px;
+  overflow: hidden;
+  padding-top: 2px; }
+.Inputfields #Inputfield_quick_field_settings .fbqf-input-item {
+  padding: 4px;
+  float: left;
+  width: 50%;
+  position: relative;
+  display: none; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-input-item .fbqf-input-label {
+    position: absolute;
+    left: 9px;
+    top: 6px;
+    z-index: 2; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-input-item input[type=number], .Inputfields #Inputfield_quick_field_settings .fbqf-input-item input[type=text] {
+    background-color: #fff !important;
+    padding: 14px 5px 4px;
+    height: 42px; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-input-item input[type=number]:focus, .Inputfields #Inputfield_quick_field_settings .fbqf-input-item input[type=text]:focus {
+      outline: none; }
+  .Inputfields #Inputfield_quick_field_settings .fbqf-input-item.fbqf-checkbox-item {
+    height: 50px; }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-input-item.fbqf-checkbox-item .fbqf-input-label {
+      position: static;
+      left: auto;
+      top: auto;
+      color: #354b60;
+      display: block;
+      padding-top: 12px;
+      padding-left: 8px;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      border: 1px solid rgba(172, 195, 225, 0.4); }
+    .Inputfields #Inputfield_quick_field_settings .fbqf-input-item.fbqf-checkbox-item input {
+      margin-right: 6px;
+      margin-bottom: -2px; }
+      .Inputfields #Inputfield_quick_field_settings .fbqf-input-item.fbqf-checkbox-item input:not(:checked) {
+        background-color: #fff; }
+.Inputfields #Inputfield_quick_field_settings.single-input .fbqf-input-item {
+  width: 100%; }
+.Inputfields #Inputfield_quick_field_settings.display-width .fbqf-width, .Inputfields #Inputfield_quick_field_settings.display-required .fbqf-required, .Inputfields #Inputfield_quick_field_settings.display-requiredif .fbqf-requiredif, .Inputfields #Inputfield_quick_field_settings.display-showif .fbqf-showif {
+  display: block; }
+.Inputfields #Inputfield_quick_field_settings.display-label .fbqf-label .f-label, .Inputfields #Inputfield_quick_field_settings.display-name .fbqf-label .f-name, .Inputfields #Inputfield_quick_field_settings.display-both .fbqf-label .f-label, .Inputfields #Inputfield_quick_field_settings.display-both .fbqf-label .f-name {
+  display: inline-block; }
+
+/*# sourceMappingURL=FormBuilderQuickFields.css.map */
