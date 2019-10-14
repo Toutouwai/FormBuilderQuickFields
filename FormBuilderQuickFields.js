@@ -22,7 +22,7 @@
 		var modal_save_clicked = false;
 
 		// Detect inputfield open/close and set hidden field value
-		$visibility_input = $('#fbqf_open');
+		var $visibility_input = $('#fbqf_open');
 		$module_inputfield.on('closed', function() {
 			$visibility_input.val('');
 		});
