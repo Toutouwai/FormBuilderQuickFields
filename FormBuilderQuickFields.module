@@ -1,20 +1,5 @@
 <?php namespace ProcessWire;
 
-/**
- *
- * Form Builder Quick Fields
- *
- * @author Robin Sallis
- *
- * ProcessWire 3.x
- * Copyright (C) 2011 by Ryan Cramer
- * Licensed under GNU/GPL v2, see LICENSE.TXT
- *
- * http://www.processwire.com
- * http://www.ryancramer.com
- *
- */
-
 class FormBuilderQuickFields extends WireData implements Module {
 
 	/**
@@ -23,7 +8,7 @@ class FormBuilderQuickFields extends WireData implements Module {
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Form Builder Quick Fields',
-			'version' => '0.1.0',
+			'version' => '0.1.1',
 			'summary' => 'Quickly set width, show-if, required and required-if status of Form Builder fields.',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/FormBuilderQuickFields',
@@ -88,7 +73,8 @@ class FormBuilderQuickFields extends WireData implements Module {
 		$markup = '';
 
 		// Hidden input to record inputfield open/close state
-		$markup .= "<input type='hidden' id='fbqf_open' name='fbqf_open' value='$fb_form->fbqf_open'>";
+		$value = $fb_form->fbqf_open ? '1' : '';
+		$markup .= "<input type='hidden' id='fbqf_open' name='fbqf_open' value='$value'>";
 
 		// Display label selector
 		$markup .= '<div class="fbqf-label-selector">';
